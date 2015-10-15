@@ -12,7 +12,11 @@
 int main(int argc, char* argv[])
 {
   // Provide CEF with command-line arguments.
+#if defined(OS_WIN)
+  CefMainArgs main_args(GetModuleHandle(NULL));
+#else
   CefMainArgs main_args(argc, argv);
+#endif
 
   // PhantomJSApp implements application-level callbacks. It will create the first
   // browser instance in OnContextInitialized() after CEF has initialized.
