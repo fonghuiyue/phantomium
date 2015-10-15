@@ -13,9 +13,9 @@ set(CMAKE_AUTORCC TRUE)
 set(PHANTOMJS_SRCS
   app.cpp
   handler.cpp
-  print_handler.cpp
   main.cpp
   resources.qrc
+  print_handler.cpp
 )
 
 #

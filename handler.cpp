@@ -144,6 +144,14 @@ void PhantomJSHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool 
   CEF_REQUIRE_UI_THREAD();
 
   std::cerr << "load state change:" << isLoading << canGoBack << canGoForward << "\n";
+  if (!isLoading) {
+    auto frame = browser->GetMainFrame();
+    frame->ExecuteJavaScript("console.log(\"Hello World!\"); console.trace();", frame->GetURL(), 0);
+    std::cerr << "printing\n";
+    std::string path("test.pdf");
+    CefPdfPrintSettings settings;
+    browser->GetHost()->PrintToPDF(path, settings, new PdfPrintCallback);
+  }
 }
 
 bool PhantomJSHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
