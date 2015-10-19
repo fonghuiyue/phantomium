@@ -18,6 +18,13 @@ set(PHANTOMJS_SRCS
   print_handler.cpp
 )
 
+# modules
+SET(PHANTOMJS_SRCS ${PHANTOMJS_SRCS}
+    lib/module.cpp
+    lib/phantom.cpp)
+
+include_directories(lib)
+
 #
 # Shared configuration.
 #

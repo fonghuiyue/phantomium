@@ -15,6 +15,7 @@ int main(int argc, char* argv[]) {
   CefMainArgs main_args(GetModuleHandle(NULL));
 #else
   CefMainArgs main_args(argc, argv);
+  CefCommandLine::InitFromString(::GetCommandLineW());
 #endif
 
   // PhantomJSApp implements application-level callbacks. It will create the first

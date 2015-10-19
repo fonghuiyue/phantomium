@@ -6,16 +6,16 @@
 #define CEF_TESTS_PHANTOMJS_APP_H_
 
 #include "include/cef_app.h"
-
-class PrintHandler;
+#include "phantom/phantom.h"
 
 class PhantomJSApp : public CefApp,
                      public CefBrowserProcessHandler,
-                     public CefRenderProcessHandler
-{
+                     public CefRenderProcessHandler {
  public:
   PhantomJSApp();
   ~PhantomJSApp();
+
+  static CefRefPtr<WebPage> CreateWebPage();
 
   // CefApp methods:
   virtual CefRefPtr<CefBrowserProcessHandler> GetBrowserProcessHandler() OVERRIDE
@@ -29,8 +29,17 @@ class PhantomJSApp : public CefApp,
   }
 
   // CefBrowserProcessHandler methods:
-  virtual void OnContextInitialized() OVERRIDE;
-  virtual CefRefPtr<CefPrintHandler> GetPrintHandler() OVERRIDE;
+  void OnContextInitialized() OVERRIDE;
+
+  // CefRenderProcessHandler methods:
+  void OnContextCreated(CefRefPtr<CefBrowser> browser,
+                        CefRefPtr<CefFrame> frame,
+                        CefRefPtr<CefV8Context> context) OVERRIDE;
+  CefRefPtr<CefRenderProcessHandler> GetRenderProcessHandler()
+    OVERRIDE { return this; }
+
+ private:
+  void Require(const CefString& path);
 
   // CefRenderProcessHandler methods:
   void OnWebKitInitialized() OVERRIDE;
@@ -38,8 +47,8 @@ class PhantomJSApp : public CefApp,
                         CefRefPtr<CefV8Context> context) OVERRIDE;
 
  private:
-  CefRefPtr<PrintHandler> m_printHandler;
-  // Include the default reference counting implementation.
+  CefRefPtr<lib::Phantom> m_phantom;
+  std::set<CefRefPtr<WebPage>> m_web_pages;
   IMPLEMENT_REFCOUNTING(PhantomJSApp);
 };
 

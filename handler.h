@@ -10,10 +10,10 @@
 #include <list>
 
 class PhantomJSHandler : public CefClient,
-                      public CefDisplayHandler,
-                      public CefLifeSpanHandler,
-                      public CefLoadHandler,
-                      public CefRenderHandler
+                         public CefDisplayHandler,
+                         public CefLifeSpanHandler,
+                         public CefLoadHandler,
+                         public CefRenderHandler
 {
  public:
   PhantomJSHandler();
@@ -23,51 +23,49 @@ class PhantomJSHandler : public CefClient,
   static PhantomJSHandler* GetInstance();
 
   // CefClient methods:
-  virtual CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE
+  CefRefPtr<CefDisplayHandler> GetDisplayHandler() OVERRIDE
   {
     return this;
   }
-  virtual CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE
+  CefRefPtr<CefLifeSpanHandler> GetLifeSpanHandler() OVERRIDE
   {
     return this;
   }
-  virtual CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE
+  CefRefPtr<CefLoadHandler> GetLoadHandler() OVERRIDE
   {
     return this;
   }
-  virtual CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE
+  CefRefPtr<CefRenderHandler> GetRenderHandler() OVERRIDE
   {
     return this;
   }
   bool OnProcessMessageReceived(CefRefPtr<CefBrowser> browser, CefProcessId source_process, CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
   // CefDisplayHandler methods:
-  virtual void OnTitleChange(CefRefPtr<CefBrowser> browser,
-                             const CefString& title) OVERRIDE;
-  virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+  bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
                              const CefString& message,
                              const CefString& source,
                              int line) OVERRIDE;
 
   // CefLifeSpanHandler methods:
-  virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
-  virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
+  void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE;
 
   // CefLoadHandler methods:
-  virtual void OnLoadError(CefRefPtr<CefBrowser> browser,
+  void OnLoadError(CefRefPtr<CefBrowser> browser,
                            CefRefPtr<CefFrame> frame,
                            ErrorCode errorCode,
                            const CefString& errorText,
                            const CefString& failedUrl) OVERRIDE;
-  virtual void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+  void OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
                                     bool isLoading,
                                     bool canGoBack,
                                     bool canGoForward) OVERRIDE;
 
   // CefRenderHandler methods:
-  virtual bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) OVERRIDE;
-  virtual void OnPaint(CefRefPtr<CefBrowser> browser,
+  bool GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect) OVERRIDE;
+  void OnPaint(CefRefPtr<CefBrowser> browser,
                        PaintElementType type,
                        const RectList& dirtyRects,
                        const void* buffer, int width, int height) OVERRIDE;

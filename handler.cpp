@@ -2,6 +2,10 @@
 // All rights reserved. Use of this source code is governed by a BSD-style
 // license that can be found in the LICENSE file.
 
+#if defined(OS_WIN)
+#include <windows.h>
+#endif
+
 #include "handler.h"
 
 #include <sstream>
@@ -67,9 +71,12 @@ void PhantomJSHandler::OnTitleChange(CefRefPtr<CefBrowser> browser,
   std::cerr << "title changed to: " << title << '\n';
 }
 
-bool PhantomJSHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser, const CefString& message, const CefString& source, int line)
+bool PhantomJSHandler::OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                        const CefString& message,
+                                        const CefString& source,
+                                        int line)
 {
-  std::cerr << "Console message from " << source << ':' << line << ": " << message << '\n';
+  LOG(INFO) << "Console message from " << source << ':' << line << ": " << message << '\n';
   return true;
 }
 
@@ -77,7 +84,7 @@ void PhantomJSHandler::OnAfterCreated(CefRefPtr<CefBrowser> browser)
 {
   CEF_REQUIRE_UI_THREAD();
 
-  std::cerr << "browser created\n";
+  LOG(INFO) << "browser created";
   // Add to the list of existing browsers.
   browser_list_.push_back(browser);
 }
@@ -139,32 +146,24 @@ void PhantomJSHandler::OnLoadError(CefRefPtr<CefBrowser> browser,
   frame->LoadString(ss.str(), failedUrl);
 }
 
-void PhantomJSHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser, bool isLoading, bool canGoBack, bool canGoForward)
+void PhantomJSHandler::OnLoadingStateChange(CefRefPtr<CefBrowser> browser,
+                                            bool isLoading,
+                                            bool canGoBack,
+                                            bool canGoForward)
 {
   CEF_REQUIRE_UI_THREAD();
-
-  std::cerr << "load state change:" << isLoading << canGoBack << canGoForward << "\n";
-  if (!isLoading) {
-    auto frame = browser->GetMainFrame();
-    frame->ExecuteJavaScript("console.log(\"Hello World!\"); console.trace();", frame->GetURL(), 0);
-    std::cerr << "printing\n";
-    std::string path("test.pdf");
-    CefPdfPrintSettings settings;
-    browser->GetHost()->PrintToPDF(path, settings, new PdfPrintCallback);
-  }
 }
 
 bool PhantomJSHandler::GetViewRect(CefRefPtr<CefBrowser> browser, CefRect& rect)
 {
-  // TODO: make this configurable
-  rect.Set(0, 0, 800, 600);
   return true;
 }
 
-void PhantomJSHandler::OnPaint(CefRefPtr<CefBrowser> browser, PaintElementType type, const RectList& dirtyRects, const void* buffer, int width, int height)
+void PhantomJSHandler::OnPaint(CefRefPtr<CefBrowser> browser,
+                               PaintElementType type,
+                               const RectList& dirtyRects,
+                               const void* buffer, int width, int height)
 {
-  // TODO: grab screenshots?
-  // do nothing
 }
 
 void PhantomJSHandler::CloseAllBrowsers(bool force_close)

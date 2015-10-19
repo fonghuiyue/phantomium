@@ -10,15 +10,12 @@
 #include <fstream>
 
 #include "handler.h"
-#include "print_handler.h"
 
 #include "include/cef_browser.h"
-#include "include/cef_command_line.h"
 #include "include/wrapper/cef_helpers.h"
 #include "include/wrapper/cef_closure_task.h"
 
 PhantomJSApp::PhantomJSApp()
-  : m_printHandler(new PrintHandler)
 {
 }
 
@@ -26,8 +23,12 @@ PhantomJSApp::~PhantomJSApp()
 {
 }
 
-void PhantomJSApp::OnContextInitialized()
+CefRefPtr<WebPage> PhantomJSApp::CreateWebPage()
 {
+
+}
+
+void PhantomJSApp::OnContextInitialized() {
   CEF_REQUIRE_UI_THREAD();
 
   // Information used when creating the native window.
@@ -47,6 +48,7 @@ void PhantomJSApp::OnContextInitialized()
   CefBrowserSettings browser_settings;
   // TODO: make this configurable
   browser_settings.web_security = STATE_DISABLED;
+  window_info.SetAsWindowless(0, true);
 
   // Create the first browser window.
   auto browser = CefBrowserHost::CreateBrowserSync(window_info, handler.get(), "about:blank",
@@ -84,35 +86,20 @@ void PhantomJSApp::OnContextInitialized()
       }
       frame->ExecuteJavaScript(fileContents, argument, 1);
     }
-  }
+  CefBrowserHost::CreateBrowser(window_info,
+                                handler.get(),
+                                "http://google.com",
+                                browser_settings, NULL);
 }
 
-CefRefPtr<CefPrintHandler> PhantomJSApp::GetPrintHandler()
+void PhantomJSApp::OnContextCreated(CefRefPtr<CefBrowser> browser,
+                                    CefRefPtr<CefFrame> frame,
+                                    CefRefPtr<CefV8Context> context)
 {
-  std::cerr << "print handler accessed\n";
-  return m_printHandler;
-}
+  CEF_REQUIRE_UI_THREAD();
 
-namespace {
-class V8Handler : public CefV8Handler
-{
-public:
-  bool Execute(const CefString &name, CefRefPtr<CefV8Value> object,
-               const CefV8ValueList &arguments, CefRefPtr<CefV8Value> &retval,
-               CefString &exception) OVERRIDE
-  {
-    if (name == "exit") {
-      CefV8Context::GetCurrentContext()->GetBrowser()->SendProcessMessage(PID_BROWSER, CefProcessMessage::Create("exit"));
-      return true;
-    }
-    exception = std::string("Unknown PhantomJS function: ") + name.ToString();
-    return true;
-    std::cerr << "V8Handler: " << name << '\t' << object << '\t' << arguments.size() << '\t' << exception;
-    return false;
-  }
-private:
-  IMPLEMENT_REFCOUNTING(V8Handler);
-};
+  LOG(INFO) << "OnContextCreated";
+
 }
 
 void PhantomJSApp::OnWebKitInitialized()
